@@ -1,0 +1,22 @@
+From 6e334b11382b3f21a7dcf71a671d201fcba97eab Mon Sep 17 00:00:00 2001
+From: xlla <xllacyx@hotmail.com>
+Date: Wed, 29 Apr 2020 14:21:29 +0800
+Subject: [PATCH] disable opencl
+
+---
+ server/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/server/CMakeLists.txt b/server/CMakeLists.txt
+index 9d03ea8d..b63e00dc 100644
+--- a/server/CMakeLists.txt
++++ b/server/CMakeLists.txt
+@@ -37,7 +37,7 @@ endif()
+ 
+ set(DEFAULT_VGL_FAKEOPENCL 0)
+ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+-	set(DEFAULT_VGL_FAKEOPENCL 1)
++#	set(DEFAULT_VGL_FAKEOPENCL 1)
+ endif()
+ option(VGL_FAKEOPENCL "Interpose enough of the OpenCL API to make OpenCL/OpenGL interoperability work"
+ 	${DEFAULT_VGL_FAKEOPENCL})
