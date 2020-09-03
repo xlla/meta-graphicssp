@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://cdjpeg.h;endline=13;md5=8184bcc7c4ac7b9edc6a7bc00f231
 DEPENDS_append_x86-64_class-target = " nasm-native"
 DEPENDS_append_x86_class-target    = " nasm-native"
 
-SRC_URI = "${SOURCEFORGE_MIRROR}/${BPN}/${BPN}-${PV}.tar.gz"
+SRC_URI = "${SOURCEFORGE_MIRROR}/${BPN}/${BPN}-;tag=${PV}"
 
 SRC_URI[md5sum] = "7c82f0f6a3130ec06b8a4d0b321cbca3"
 SRC_URI[sha256sum] = "b24890e2bb46e12e72a79f7e965f409f4e16466d00e1dd15d93d73ee6b592523"
@@ -25,7 +25,7 @@ RPROVIDES_${PN} += "jpeg"
 RREPLACES_${PN} += "jpeg"
 RCONFLICTS_${PN} += "jpeg"
 
-inherit autotools pkgconfig
+inherit autotools pkgconfig cmake
 
 # Add nasm-native dependency consistently for all build arches is hard
 EXTRA_OECONF_append_class-native = " --without-simd"

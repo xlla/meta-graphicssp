@@ -7,10 +7,17 @@ FILESEXTRAPATHS_prepend := "${THISDIR}:"
 SRC_URI = "file://turbovnc-2.2.4.tar.gz"
 
 S = "${WORKDIR}/turbovnc-${PV}"
+PACKAGE_ARCH = "aarch64"
 
 #export JAVA_HOME="${STAGING_DIR_NATIVE}/usr/bin/java"
 export JAVA_HOME="${STAGING_LIBDIR_NATIVE}/jvm/openjdk-8-native"
+# export JAVA_HOME="${STAGING_DIR_NATIVE}/usr/lib/jvm/openjdk-8-native"
 
 EXTRA_OECMAKE += ""
 
-inherit cmake pkgconfig java-library
+
+inherit pkgconfig cmake java-library
+
+BBCLASSEXTEND = "native"
+
+# BBCLASSEXTEND = "native nativesdk"
