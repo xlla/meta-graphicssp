@@ -10,7 +10,11 @@ LIC_FILES_CHKSUM = "file://cdjpeg.h;endline=13;md5=8184bcc7c4ac7b9edc6a7bc00f231
 DEPENDS_append_x86-64_class-target = " nasm-native"
 DEPENDS_append_x86_class-target    = " nasm-native"
 
-SRC_URI = "git://github.com/libjpeg-turbo/libjpeg-turbo.git;protocol=git;tag=${PV}"
+# DEPENDS = "openjdk-8-native "
+
+SRC_URI = "git://github.com/libjpeg-turbo/libjpeg-turbo.git;protocol=git;tag=${PV} \
+           file://0001-fix-package_qa-error.patch \
+           "
 
 #SRC_URI[md5sum] = "097b6dd4931b322ba74186deb0fb6613"
 #SRC_URI[sha256sum] = "21f3936fd776723e2e7e0eec14d96717446da3bc961ffd319a17b9d19a24d85a"
@@ -19,17 +23,19 @@ SRC_URI = "git://github.com/libjpeg-turbo/libjpeg-turbo.git;protocol=git;tag=${P
 
 PE= "1"
 S = "${WORKDIR}/git"
-
+PACKAGE_ARCH = "aarch64"
 # Drop-in replacement for jpeg
-PROVIDES = "jpeg"
-RPROVIDES_${PN} += "jpeg"
-RREPLACES_${PN} += "jpeg"
-RCONFLICTS_${PN} += "jpeg"
+# PROVIDES = "jpeg"
+# RPROVIDES_${PN} += "jpeg"
+# RREPLACES_${PN} += "jpeg"
+# RCONFLICTS_${PN} += "jpeg"
 
-inherit pkgconfig cmake
+export JAVA_HOME="${STAGING_LIBDIR_NATIVE}/jvm/openjdk-8-native"
+
+inherit pkgconfig cmake 
 
 # Add nasm-native dependency consistently for all build arches is hard
-EXTRA_OECONF_append_class-native = " --without-simd"
+# EXTRA_OECONF_append_class-native = " --without-simd"
 
 # Work around missing x32 ABI support
 # EXTRA_OECONF_append_class-target = " ${@bb.utils.contains("TUNE_FEATURES", "mx32", "--without-simd", "", d)}"
@@ -41,7 +47,26 @@ EXTRA_OECONF_append_class-native = " --without-simd"
 # EXTRA_OECONF_append_class-target_powerpc = " ${@bb.utils.contains("TUNE_FEATURES", "altivec", "", "--without-simd", d)}"
 # EXTRA_OECONF_append_class-target_powerpc64 = " ${@bb.utils.contains("TUNE_FEATURES", "altivec", "", "--without-simd", d)}"
 
-# EXTRA_OECMAKE = ""
+# EXTRA_OECMAKE += " -DWITH_JAVA=1"
+
+
+# Add nasm-native dependency consistently for all build arches is hard
+EXTRA_OECMAKE_append_class-native = " -DWITH_SIMD=False"
+EXTRA_OECMAKE_append_class-nativesdk = " -DWITH_SIMD=False"
+
+# Work around missing x32 ABI support
+EXTRA_OECMAKE_append_class-target = " ${@bb.utils.contains("TUNE_FEATURES", "mx32", "-DWITH_SIMD=False", "", d)}"
+
+# Work around missing non-floating point ABI support in MIPS
+EXTRA_OECMAKE_append_class-target = " ${@bb.utils.contains("MIPSPKGSFX_FPU", "-nf", "-DWITH_SIMD=False", "", d)}"
+
+# Provide a workaround if Altivec unit is not present in PPC
+EXTRA_OECMAKE_append_class-target_powerpc = " ${@bb.utils.contains("TUNE_FEATURES", "altivec", "", "-DWITH_SIMD=False", d)}"
+EXTRA_OECMAKE_append_class-target_powerpc64 = " ${@bb.utils.contains("TUNE_FEATURES", "altivec", "", "-DWITH_SIMD=False", d)}"
+
+DEBUG_OPTIMIZATION_append_armv4 = " ${@bb.utils.contains('TUNE_CCARGS', '-mthumb', '-fomit-frame-pointer', '', d)}"
+DEBUG_OPTIMIZATION_append_armv5 = " ${@bb.utils.contains('TUNE_CCARGS', '-mthumb', '-fomit-frame-pointer', '', d)}"
+
 
 # CFLAGS_append = " -fPIC "
 
@@ -68,11 +93,11 @@ FILES_libturbojpeg = "${libdir}/libturbojpeg.so.*"
 
 # DESCRIPTION_jpeg-tools = "The jpeg-tools package includes client programs to access libjpeg functionality.  These tools allow for the compression, decompression, transformation and display of JPEG files and benchmarking of the libjpeg library."
 # FILES_jpeg-tools = "${bindir}/*"
-INSANE_SKIP_jpeg-tools = "useless-rpaths"
+# INSANE_SKIP_jpeg-tools = "useless-rpaths"
 
 # DESCRIPTION_libturbojpeg = "A SIMD-accelerated JPEG codec which provides only TurboJPEG APIs"
 # FILES_libturbojpeg = "${libdir}/libturbojpeg.so.* ${libdir}/libjpeg.so.*"
-INSANE_SKIP_libturbojpeg = "useless-rpaths"
+# INSANE_SKIP_libturbojpeg = "useless-rpaths"
 
 # FILES_${PN}="${libdir}/lib*jpeg.so.* ${libdir}/pkgconfig ${includedir}" 
 # FILES_${PN}-dev="${libdir}/lib*.so  ${libdir}/libjpeg.so.62.3.0  ${libdir}/libturbojpeg.so.0.2.0 ${bindir}/*" 
@@ -81,7 +106,7 @@ INSANE_SKIP_libturbojpeg = "useless-rpaths"
 #               ${libdir}/libturbojpeg.so.* \
 #             " 
 # RDEPENDS_${PN}-dbg = ""
-INSANE_SKIP_${PN} += "useless-rpaths"
+# INSANE_SKIP_${PN} += "useless-rpaths"
 
 
-BBCLASSEXTEND = "native"
+BBCLASSEXTEND = "native nativesdk"

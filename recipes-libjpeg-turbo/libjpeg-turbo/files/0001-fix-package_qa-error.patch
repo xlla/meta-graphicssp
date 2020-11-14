@@ -1,0 +1,22 @@
+From b835aa4be38ef3f50da103aae5320c2556c854c4 Mon Sep 17 00:00:00 2001
+From: xlla <xllacyx@hotmail.com>
+Date: Fri, 4 Sep 2020 15:16:28 +0800
+Subject: [PATCH] fix package_qa error
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cc548f5..1563e7e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -105,7 +105,7 @@ endif()
+ 
+ include(cmakescripts/GNUInstallDirs.cmake)
+ 
+-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
++#set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
+ 
+ macro(report_directory var)
+   if(CMAKE_INSTALL_${var} STREQUAL CMAKE_INSTALL_FULL_${var})
